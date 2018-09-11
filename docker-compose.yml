@@ -1,0 +1,30 @@
+version: '3.5'
+
+
+services:
+  laravel:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: laravel-docker
+    restart: 'always'
+    ports:
+      - "80:80"
+    links:
+      - mariadb
+    depends_on:
+      - mariadb
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/vhost:/etc/apache2/sites-enabled
+      - ./docker/tmp/logs:/var/log/apache2
+  mariadb:
+    image: mariadb:latest
+    restart: 'always'
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=laravel-blog
+    volumes:
+      - ./docker/tmp/db:/var/lib/mysql:cached
